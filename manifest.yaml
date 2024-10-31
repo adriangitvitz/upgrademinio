@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+   name: ns-1
+   labels:
+     name: ns-1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: upgrademinio
+ namespace: ns-1
+ labels:
+   app: upgrademinio
+spec:
+ replicas: 1
+ selector:
+   matchLabels:
+     app: upgrademinio
+ template:
+   metadata:
+     labels:
+       app: upgrademinio
+   spec:
+     containers:
+       - name: upgrademinio
+         image: minioupgrade:local
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: upgrademinio-service
+ namespace: ns-1 
+spec:
+ selector:
+   app: upgrademinio
+ ports:
+   - name: http-upgrade
+     port: 3000
+     targetPort: 3000
+ type: ClusterIP
